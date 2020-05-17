@@ -8,6 +8,8 @@ in vec3 EyeDirection_cameraspace;
 in vec3 LightDirection_cameraspace;
 in vec3 LightDirection_cameraspaceVerde;
 in vec3 LightDirection_cameraspaceVermelho;
+in vec3 LightDirection_cameraspaceAzul;
+in vec3 LightDirection_cameraspaceAmarelo;
 
 // Ouput data
 out vec3 color;
@@ -18,6 +20,8 @@ uniform mat4 MV;
 uniform vec3 LightPosition_worldspace;
 uniform vec3 LightPosition_worldspaceVerde;
 uniform vec3 LightPosition_worldspaceVermelho;
+uniform vec3 LightPosition_worldspaceAzul;
+uniform vec3 LightPosition_worldspaceAmarelo;
 
 uniform float LightPower_worldspaceGeral;
 uniform float LightPower_worldspaceBotoes;
@@ -27,6 +31,8 @@ void main(){
 	vec3 LightColor = vec3(1,1,1);
 	vec3 LightColorVerde = vec3(0,1,0);
 	vec3 LightColorVermelho = vec3(1,0,0);
+	vec3 LightColorAzul = vec3(0,0,1);
+	vec3 LightColorAmarelo = vec3(1,1,0);
 
 	float LightPowerGeral = LightPower_worldspaceGeral;
 	float LightPowerBotoes = LightPower_worldspaceBotoes;
@@ -38,24 +44,34 @@ void main(){
 	float distance = length( LightPosition_worldspace - Position_worldspace );
 	float distanceVerde = length( LightPosition_worldspaceVerde - Position_worldspace );
 	float distanceVermelho = length( LightPosition_worldspaceVermelho - Position_worldspace );
+	float distanceAzul = length( LightPosition_worldspaceAzul - Position_worldspace );
+	float distanceAmarelo = length( LightPosition_worldspaceAmarelo - Position_worldspace );
 
 	vec3 n = normalize( Normal_cameraspace );
 	vec3 l = normalize( LightDirection_cameraspace );
 	vec3 lVerde = normalize( LightDirection_cameraspaceVerde );
 	vec3 lVermelho = normalize( LightDirection_cameraspaceVermelho );
+	vec3 lAzul = normalize( LightDirection_cameraspaceAzul );
+	vec3 lAmarelo = normalize( LightDirection_cameraspaceAmarelo );
 	
 	float cosTheta = clamp( dot( n,l ), 0,1 );
 	float cosThetaVerde = clamp( dot( n,lVerde ), 0,1 );
 	float cosThetaVermelho = clamp( dot( n,lVermelho ), 0,1 );
-	
+	float cosThetaAzul = clamp( dot( n,lAzul ), 0,1 );
+	float cosThetaAmarelo = clamp( dot( n,lAmarelo ), 0,1 );
+
 	vec3 E = normalize(EyeDirection_cameraspace);
 	vec3 R = reflect(-l,n);
 	vec3 RVerde = reflect(-lVerde,n);
 	vec3 RVermelho = reflect(-lVermelho,n);
+	vec3 RAzul = reflect(-lAzul,n);
+	vec3 RAmarelo = reflect(-lAmarelo,n);
 
 	float cosAlpha = clamp( dot( E,R ), 0,1 );
 	float cosAlphaVerde = clamp( dot( E,RVerde ), 0,1 );
 	float cosAlphaVermelho = clamp( dot( E,RVermelho ), 0,1 );
+	float cosAlphaAzul = clamp( dot( E,RAzul ), 0,1 );
+	float cosAlphaAmarelo = clamp( dot( E,RAmarelo ), 0,1 );
 	
 	color = 
 		MaterialAmbientColor +
@@ -66,5 +82,11 @@ void main(){
 		MaterialSpecularColor * LightColorVerde * LightPowerBotoes * pow(cosAlphaVerde,5) / (distanceVerde*distanceVerde) +
 		
 		MaterialDiffuseColor * LightColorVermelho * LightPowerBotoes * cosThetaVermelho / (distanceVermelho*distanceVermelho) +
-		MaterialSpecularColor * LightColorVermelho * LightPowerBotoes * pow(cosAlphaVermelho,5) / (distanceVermelho*distanceVermelho);
+		MaterialSpecularColor * LightColorVermelho * LightPowerBotoes * pow(cosAlphaVermelho,5) / (distanceVermelho*distanceVermelho) +
+
+		MaterialDiffuseColor * LightColorAzul * LightPowerBotoes * cosThetaAzul / (distanceAzul*distanceAzul) +
+		MaterialSpecularColor * LightColorAzul * LightPowerBotoes * pow(cosAlphaAzul,5) / (distanceAzul*distanceAzul) +
+
+		MaterialDiffuseColor * LightColorAmarelo * LightPowerBotoes * cosThetaAmarelo / (distanceAmarelo*distanceAmarelo) +
+		MaterialSpecularColor * LightColorAmarelo * LightPowerBotoes * pow(cosAlphaAmarelo,5) / (distanceAmarelo*distanceAmarelo);
 }

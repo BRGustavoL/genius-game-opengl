@@ -39,6 +39,8 @@ vec3 upOrientation(0.0f, 1.0f, 0.0f);
 vec3 LightPosition(0.0f, 12.0f, 3.19f);
 vec3 LightPositionVerde(-2.0f, 2.60f, -0.60f);
 vec3 LightPositionVermelho(-0.85f, 2.60f, -0.60f);
+vec3 LightPositionAzul(-1.0f, 2.60f, 0.60f);
+vec3 LightPositionAmarelo(-2.0f, 2.60f, 0.70f);
 
 float anguloProjection = 45.0f;
 float widthProjection = 4.0f;
@@ -69,30 +71,30 @@ float LightPowerBotoes = 0.30;
 void addTweakBar() {
     // Initialize the GUI
     TwInit(TW_OPENGL_CORE, NULL);
-    TwWindowSize(1366, 680);
-    TwBar * EulerGUI = TwNewBar("Euler settings");
+    TwWindowSize(1024, 768);
+    // TwBar * EulerGUI = TwNewBar("Euler settings");
    // TwBar * QuaternionGUI = TwNewBar("Quaternion settings");
     TwBar * ViewGUI = TwNewBar("View Settings");
-    TwBar * ProjectionGUI = TwNewBar("Projection Settings");
-    TwSetParam(EulerGUI, NULL, "refresh", TW_PARAM_CSTRING, 1, "0.1");
+    // TwBar * ProjectionGUI = TwNewBar("Projection Settings");
+    // TwSetParam(EulerGUI, NULL, "refresh", TW_PARAM_CSTRING, 1, "0.1");
     //TwSetParam(QuaternionGUI, NULL, "position", TW_PARAM_CSTRING, 1, "808 16");
     TwSetParam(ViewGUI, NULL, "position", TW_PARAM_CSTRING, 1, "16 408");
     TwSetParam(ViewGUI, NULL, "position", TW_PARAM_CSTRING, 1, "808 408");
  
-    TwAddVarRW(EulerGUI, "Euler X", TW_TYPE_FLOAT, &gOrientation1.x, "step=0.01");
-    TwAddVarRW(EulerGUI, "Euler Y", TW_TYPE_FLOAT, &gOrientation1.y, "step=0.01");
-    TwAddVarRW(EulerGUI, "Euler Z", TW_TYPE_FLOAT, &gOrientation1.z, "step=0.01");
-    TwAddVarRW(EulerGUI, "Pos X"  , TW_TYPE_FLOAT, &gPosition1.x, "step=0.1");
-    TwAddVarRW(EulerGUI, "Pos Y"  , TW_TYPE_FLOAT, &gPosition1.y, "step=0.1");
-    TwAddVarRW(EulerGUI, "Pos Z"  , TW_TYPE_FLOAT, &gPosition1.z, "step=0.1");
+    // TwAddVarRW(EulerGUI, "Euler X", TW_TYPE_FLOAT, &gOrientation1.x, "step=0.01");
+    // TwAddVarRW(EulerGUI, "Euler Y", TW_TYPE_FLOAT, &gOrientation1.y, "step=0.01");
+    // TwAddVarRW(EulerGUI, "Euler Z", TW_TYPE_FLOAT, &gOrientation1.z, "step=0.01");
+    // TwAddVarRW(EulerGUI, "Pos X"  , TW_TYPE_FLOAT, &gPosition1.x, "step=0.1");
+    // TwAddVarRW(EulerGUI, "Pos Y"  , TW_TYPE_FLOAT, &gPosition1.y, "step=0.1");
+    // TwAddVarRW(EulerGUI, "Pos Z"  , TW_TYPE_FLOAT, &gPosition1.z, "step=0.1");
  
     //TwAddVarRW(QuaternionGUI, "Quaternion", TW_TYPE_QUAT4F, &gOrientation2, "showval=true open=true ");
     //TwAddVarRW(QuaternionGUI, "Use LookAt", TW_TYPE_BOOL8 , &gLookAtOther, "help='Look at the other monkey ?'");
  
     //View
-    TwAddVarRW(ViewGUI, "C�mera X", TW_TYPE_FLOAT, &cameraOrientation.x, "step=0.01");
-    TwAddVarRW(ViewGUI, "C�mera Y", TW_TYPE_FLOAT, &cameraOrientation.y, "step=0.01");
-    TwAddVarRW(ViewGUI, "C�mera Z", TW_TYPE_FLOAT, &cameraOrientation.z, "step=0.01");
+    TwAddVarRW(ViewGUI, "Camera X", TW_TYPE_FLOAT, &cameraOrientation.x, "step=0.01");
+    TwAddVarRW(ViewGUI, "Camera Y", TW_TYPE_FLOAT, &cameraOrientation.y, "step=0.01");
+    TwAddVarRW(ViewGUI, "Camera Z", TW_TYPE_FLOAT, &cameraOrientation.z, "step=0.01");
     TwAddVarRW(ViewGUI, "Look X", TW_TYPE_FLOAT, &lookOrientation.x, "step=0.01");
     TwAddVarRW(ViewGUI, "Look Y", TW_TYPE_FLOAT, &lookOrientation.y, "step=0.01");
     TwAddVarRW(ViewGUI, "Look Z", TW_TYPE_FLOAT, &lookOrientation.z, "step=0.01");
@@ -116,14 +118,21 @@ void addTweakBar() {
     TwAddVarRW(ViewGUI, "Luz Vermelha X", TW_TYPE_FLOAT, &LightPositionVermelho.x, "step=0.01");
     TwAddVarRW(ViewGUI, "Luz Vermelha Y", TW_TYPE_FLOAT, &LightPositionVermelho.y, "step=0.01");
     TwAddVarRW(ViewGUI, "Luz Vermelha Z", TW_TYPE_FLOAT, &LightPositionVermelho.z, "step=0.01");
- 
+
+    TwAddVarRW(ViewGUI, "Luz Azul X", TW_TYPE_FLOAT, &LightPositionAzul.x, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Azul Y", TW_TYPE_FLOAT, &LightPositionAzul.y, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Azul Z", TW_TYPE_FLOAT, &LightPositionAzul.z, "step=0.01");
+
+    TwAddVarRW(ViewGUI, "Luz Amarelo X", TW_TYPE_FLOAT, &LightPositionAmarelo.x, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Amarelo Y", TW_TYPE_FLOAT, &LightPositionAmarelo.y, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Amarelo Z", TW_TYPE_FLOAT, &LightPositionAmarelo.z, "step=0.01");
  
     //Projection
-    TwAddVarRW(ProjectionGUI, "�gulo de Proje��o", TW_TYPE_FLOAT, &anguloProjection, "step=0.01");
-    TwAddVarRW(ProjectionGUI, "Largura Proje��o", TW_TYPE_FLOAT, &widthProjection, "step=0.01");
-    TwAddVarRW(ProjectionGUI, "Altura Proje��o", TW_TYPE_FLOAT, &heightProjection, "step=0.01");
-    TwAddVarRW(ProjectionGUI, "Near Proje��o", TW_TYPE_FLOAT, &nearProjection, "step=0.01");
-    TwAddVarRW(ProjectionGUI, "Far Proje��o", TW_TYPE_FLOAT, &farProjection, "step=0.01");    
+    // TwAddVarRW(ProjectionGUI, "�gulo de Proje��o", TW_TYPE_FLOAT, &anguloProjection, "step=0.01");
+    // TwAddVarRW(ProjectionGUI, "Largura Proje��o", TW_TYPE_FLOAT, &widthProjection, "step=0.01");
+    // TwAddVarRW(ProjectionGUI, "Altura Proje��o", TW_TYPE_FLOAT, &heightProjection, "step=0.01");
+    // TwAddVarRW(ProjectionGUI, "Near Proje��o", TW_TYPE_FLOAT, &nearProjection, "step=0.01");
+    // TwAddVarRW(ProjectionGUI, "Far Proje��o", TW_TYPE_FLOAT, &farProjection, "step=0.01");    
 }
 
 void KeyBoardCameraPosition(float deltaTime) {
@@ -427,7 +436,10 @@ int main( void )
     GLuint LightIDPosition = glGetUniformLocation(programID, "LightPosition_worldspace");
     GLuint LightIDPositionVerde = glGetUniformLocation(programID, "LightPosition_worldspaceVerde");
     GLuint LightIDPositionVermelho = glGetUniformLocation(programID, "LightPosition_worldspaceVermelho");
-		GLuint LightIDPowerGeral = glGetUniformLocation(programID, "LightPower_worldspaceGeral");
+    GLuint LightIDPositionAzul = glGetUniformLocation(programID, "LightPosition_worldspaceAzul");
+    GLuint LightIDPositionAmarelo = glGetUniformLocation(programID, "LightPosition_worldspaceAmarelo");
+		
+    GLuint LightIDPowerGeral = glGetUniformLocation(programID, "LightPower_worldspaceGeral");
     GLuint LightIDPowerBotoes = glGetUniformLocation(programID, "LightPower_worldspaceBotoes");
  
     // For speed computation
@@ -465,6 +477,9 @@ int main( void )
       glUniform3f(LightIDPosition, LightPosition.x, LightPosition.y, LightPosition.z);
       glUniform3f(LightIDPositionVerde, LightPositionVerde.x, LightPositionVerde.y, LightPositionVerde.z);
       glUniform3f(LightIDPositionVermelho, LightPositionVermelho.x, LightPositionVermelho.y, LightPositionVermelho.z);
+      glUniform3f(LightIDPositionAzul, LightPositionAzul.x, LightPositionAzul.y, LightPositionAzul.z);
+      glUniform3f(LightIDPositionAmarelo, LightPositionAmarelo.x, LightPositionAmarelo.y, LightPositionAmarelo.z);
+      
       glUniform1f(LightIDPowerGeral, LightPowerGeral);
 			glUniform1f(LightIDPowerBotoes, LightPowerBotoes);
 
