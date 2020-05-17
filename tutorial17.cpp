@@ -59,7 +59,7 @@ GLuint vertexPosition_modelspaceID;
 GLuint vertexUVID;
 GLuint vertexNormal_modelspaceID;
 GLuint elementbuffer;
-float LightPower = 0;
+float LightPower = 40;
 
 void addTweakBar() {
     // Initialize the GUI
@@ -362,7 +362,7 @@ int main( void )
     std::vector<glm::vec2> indexed_uvs;
     std::vector<glm::vec3> indexed_normals;
 
-    loadOBJ("obj/Mesa.obj", vertices, uvs, normals);
+    loadOBJ("obj/mesa.obj", vertices, uvs, normals);
    	GLuint sizeMesa = vertices.size();
 
     loadOBJ("obj/genius_base.obj", vertices, uvs, normals);
@@ -391,15 +391,15 @@ int main( void )
 
     indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs, indexed_normals);
 
-    printf("TAMANHO MESA %d\n", sizeMesa);
+    printf("TAMANHO MESA %d\n", sizeBaseMaior-sizeMesa);
     printf("TAMANHO BASE MAIOR %d\n", sizeBaseMaior);
-    printf("TAMANHO BASE LIGA %d\n", sizeBaseLiga);
-    printf("TAMANHO BOT�O VERDE %d\n", sizeVerde);
-    printf("TAMANHO BOT�O VERMELHO %d\n", sizeVermelho);
-    printf("TAMANHO BOT�O AMARELO %d\n", sizeAmarelo);
-    printf("TAMANHO BOT�O AZUL %d\n", sizeAzul);
-    printf("TAMANHO CENTRO LIGA MAIOR %d\n", sizeCentroLigaMaior);
-    printf("TAMANHO CENTRO LIGA MENOR %d\n", sizeCentroLigaMenor);
+    // printf("TAMANHO BASE LIGA %d\n", sizeBaseLiga);
+    // printf("TAMANHO BOT�O VERDE %d\n", sizeVerde);
+    // printf("TAMANHO BOT�O VERMELHO %d\n", sizeVermelho);
+    // printf("TAMANHO BOT�O AMARELO %d\n", sizeAmarelo);
+    // printf("TAMANHO BOT�O AZUL %d\n", sizeAzul);
+    // printf("TAMANHO CENTRO LIGA MAIOR %d\n", sizeCentroLigaMaior);
+    // printf("TAMANHO CENTRO LIGA MENOR %d\n", sizeCentroLigaMenor);
 
     addBuffer(indexed_vertices,indexed_uvs,indexed_normals,indices);
 
@@ -459,62 +459,62 @@ int main( void )
 				ConfigAndRender(MatrixID, Base, TextureID, sizeBaseMaior-sizeMesa, sizeBaseMaior, ModelMatrix);
 			}
 
-			// { // BASE LIGA
-			// 	glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-			// 	glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-			// 	glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
-			// 	glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
-			// 	ConfigAndRender(MatrixID, Base2, TextureID, sizeBaseMaior, sizeBaseLiga-sizeMesa, ModelMatrix2);
-			// }
+			{ // BASE LIGA
+				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+				glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+				glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
+				glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
+				ConfigAndRender(MatrixID, Base2, TextureID, sizeBaseLiga-sizeBaseMaior, sizeBaseLiga, ModelMatrix2);
+			}
 
-			// { // BOTAO VERDE
-			// 	glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-			// 	glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-			// 	glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
-			// 	glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
-			// 	ConfigAndRender(MatrixID, BotaoVerde, TextureID, sizeBaseLiga, sizeVerde, ModelMatrix2);
-			// }
+			{ // BOTAO VERDE
+				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+				glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+				glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
+				glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
+				ConfigAndRender(MatrixID, BotaoVerde, TextureID, sizeVerde-sizeBaseLiga, sizeVerde, ModelMatrix2);
+			}
 
-			// { // BOTAO VERMELHO
-			// 	glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-			// 	glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-			// 	glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
-			// 	glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
-			// 	ConfigAndRender(MatrixID, BotaoVermelho, TextureID, sizeVerde, sizeVermelho, ModelMatrix2);
-			// }
+			{ // BOTAO VERMELHO
+				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+				glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+				glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
+				glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
+				ConfigAndRender(MatrixID, BotaoVermelho, TextureID, sizeVermelho-sizeVerde, sizeVermelho, ModelMatrix2);
+			}
 
-			// { // BOTAO AMARELO
-			// 	glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-			// 	glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-			// 	glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
-			// 	glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
-			// 	ConfigAndRender(MatrixID, BotaoAmarelo, TextureID, sizeVermelho, sizeAmarelo, ModelMatrix2);
-			// }
+			{ // BOTAO AMARELO
+				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+				glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+				glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
+				glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
+				ConfigAndRender(MatrixID, BotaoAmarelo, TextureID, sizeAmarelo-sizeVermelho, sizeAmarelo, ModelMatrix2);
+			}
 
-			// { // BOTAO AZUL
-			// 	glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-			// 	glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-			// 	glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
-			// 	glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
-			// 	ConfigAndRender(MatrixID, BotaoAzul, TextureID, sizeAmarelo, sizeAzul, ModelMatrix2);
+			{ // BOTAO AZUL
+				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+				glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+				glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
+				glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
+				ConfigAndRender(MatrixID, BotaoAzul, TextureID, sizeAzul-sizeAmarelo, sizeAzul, ModelMatrix2);
 
-			// }
+			}
 
-			// { // CENTRO LIGA MAIOR
-			// 	glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-			// 	glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-			// 	glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
-			// 	glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
-			// 	ConfigAndRender(MatrixID, Centro, TextureID, sizeAzul, sizeCentroLigaMaior, ModelMatrix2);
-			// }
+			{ // CENTRO LIGA MAIOR
+				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+				glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+				glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
+				glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
+				ConfigAndRender(MatrixID, Centro, TextureID, sizeCentroLigaMaior-sizeAzul, sizeCentroLigaMaior, ModelMatrix2);
+			}
 
-			// { // CENTRO LIGA MENOR
-			// 	glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
-			// 	glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
-			// 	glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
-			// 	glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
-			// 	ConfigAndRender(MatrixID, Centro1, TextureID, sizeCentroLigaMaior, sizeCentroLigaMenor, ModelMatrix2);
-			// }
+			{ // CENTRO LIGA MENOR
+				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+				glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+				glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
+				glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
+				ConfigAndRender(MatrixID, Centro1, TextureID, sizeCentroLigaMenor-sizeCentroLigaMaior, sizeCentroLigaMenor, ModelMatrix2);
+			}
 
 
 
