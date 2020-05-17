@@ -35,7 +35,10 @@ vec3 gOrientation1;
 vec3 cameraOrientation(0.0f, 5.0f, 10.0f); //Posição da camera
 vec3 lookOrientation(-2.0f, 0.17f, 0.0f);
 vec3 upOrientation(0.0f, 1.0f, 0.0f);
- 
+
+vec3 LightPosition(0.0f, 12.0f, 3.19f);
+vec3 LightPositionVerde(-2.0f, 2.60f, -0.60f);
+
 float anguloProjection = 45.0f;
 float widthProjection = 4.0f;
 float heightProjection = 3.0f;
@@ -59,7 +62,8 @@ GLuint vertexPosition_modelspaceID;
 GLuint vertexUVID;
 GLuint vertexNormal_modelspaceID;
 GLuint elementbuffer;
-float LightPower = 40;
+float LightPowerGeral = 100.00;
+float LightPowerBotoes = 0.30;
 
 void addTweakBar() {
     // Initialize the GUI
@@ -97,7 +101,16 @@ void addTweakBar() {
 
 
     //Light
-    TwAddVarRW(ViewGUI, "LightPower", TW_TYPE_FLOAT, &LightPower, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Geral", TW_TYPE_FLOAT, &LightPowerGeral, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Botoes", TW_TYPE_FLOAT, &LightPowerBotoes, "step=0.01");
+
+    TwAddVarRW(ViewGUI, "Luz Geral X", TW_TYPE_FLOAT, &LightPosition.x, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Geral Y", TW_TYPE_FLOAT, &LightPosition.y, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Geral Z", TW_TYPE_FLOAT, &LightPosition.z, "step=0.01");
+
+    TwAddVarRW(ViewGUI, "Luz Verde X", TW_TYPE_FLOAT, &LightPositionVerde.x, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Verde Y", TW_TYPE_FLOAT, &LightPositionVerde.y, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Verde Z", TW_TYPE_FLOAT, &LightPositionVerde.z, "step=0.01");
  
  
     //Projection
@@ -326,6 +339,7 @@ int main( void )
     // Create and compile our GLSL program from the shaders
    
     programID = LoadShaders( "StandardShading.vertexshader", "StandardShading.fragmentshader" );
+    // programID = LoadShaders("TransformVertexShader.vertexshader", "TextureFragmentShader.fragmentshader");
  
     // Get a handle for our "MVP" uniform
     GLuint MatrixID = glGetUniformLocation(programID, "MVP");
@@ -391,8 +405,8 @@ int main( void )
 
     indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs, indexed_normals);
 
-    printf("TAMANHO MESA %d\n", sizeBaseMaior-sizeMesa);
-    printf("TAMANHO BASE MAIOR %d\n", sizeBaseMaior);
+    // printf("TAMANHO MESA %d\n", sizeBaseMaior-sizeMesa);
+    // printf("TAMANHO BASE MAIOR %d\n", sizeBaseMaior);
     // printf("TAMANHO BASE LIGA %d\n", sizeBaseLiga);
     // printf("TAMANHO BOT�O VERDE %d\n", sizeVerde);
     // printf("TAMANHO BOT�O VERMELHO %d\n", sizeVermelho);
@@ -405,8 +419,10 @@ int main( void )
 
     // Get a handle for our "LightPosition" uniform
     glUseProgram(programID);
-    GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
-		GLuint LightIDPower = glGetUniformLocation(programID, "LightPower_worldspace");
+    GLuint LightIDPosition = glGetUniformLocation(programID, "LightPosition_worldspace");
+    GLuint LightIDPositionVerde = glGetUniformLocation(programID, "LightPosition_worldspaceVerde");
+		GLuint LightIDPowerGeral = glGetUniformLocation(programID, "LightPower_worldspaceGeral");
+    GLuint LightIDPowerBotoes = glGetUniformLocation(programID, "LightPower_worldspaceBotoes");
  
     // For speed computation
     double lastTime = glfwGetTime();
@@ -440,8 +456,10 @@ int main( void )
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
 			glm::vec3 lightPos = glm::vec3(2,8,2);
-			glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
-			glUniform1f(LightIDPower, LightPower);
+      glUniform3f(LightIDPosition, LightPosition.x, LightPosition.y, LightPosition.z);
+      glUniform3f(LightIDPositionVerde, LightPositionVerde.x, LightPositionVerde.y, LightPositionVerde.z);
+      glUniform1f(LightIDPowerGeral, LightPowerGeral);
+			glUniform1f(LightIDPowerBotoes, LightPowerBotoes);
 
 			{ // MESA
 				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
