@@ -38,6 +38,7 @@ vec3 upOrientation(0.0f, 1.0f, 0.0f);
 
 vec3 LightPosition(0.0f, 12.0f, 3.19f);
 vec3 LightPositionVerde(-2.0f, 2.60f, -0.60f);
+vec3 LightPositionVermelho(-0.85f, 2.60f, -0.60f);
 
 float anguloProjection = 45.0f;
 float widthProjection = 4.0f;
@@ -62,7 +63,7 @@ GLuint vertexPosition_modelspaceID;
 GLuint vertexUVID;
 GLuint vertexNormal_modelspaceID;
 GLuint elementbuffer;
-float LightPowerGeral = 100.00;
+float LightPowerGeral = 30.0;
 float LightPowerBotoes = 0.30;
 
 void addTweakBar() {
@@ -111,6 +112,10 @@ void addTweakBar() {
     TwAddVarRW(ViewGUI, "Luz Verde X", TW_TYPE_FLOAT, &LightPositionVerde.x, "step=0.01");
     TwAddVarRW(ViewGUI, "Luz Verde Y", TW_TYPE_FLOAT, &LightPositionVerde.y, "step=0.01");
     TwAddVarRW(ViewGUI, "Luz Verde Z", TW_TYPE_FLOAT, &LightPositionVerde.z, "step=0.01");
+
+    TwAddVarRW(ViewGUI, "Luz Vermelha X", TW_TYPE_FLOAT, &LightPositionVermelho.x, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Vermelha Y", TW_TYPE_FLOAT, &LightPositionVermelho.y, "step=0.01");
+    TwAddVarRW(ViewGUI, "Luz Vermelha Z", TW_TYPE_FLOAT, &LightPositionVermelho.z, "step=0.01");
  
  
     //Projection
@@ -421,6 +426,7 @@ int main( void )
     glUseProgram(programID);
     GLuint LightIDPosition = glGetUniformLocation(programID, "LightPosition_worldspace");
     GLuint LightIDPositionVerde = glGetUniformLocation(programID, "LightPosition_worldspaceVerde");
+    GLuint LightIDPositionVermelho = glGetUniformLocation(programID, "LightPosition_worldspaceVermelho");
 		GLuint LightIDPowerGeral = glGetUniformLocation(programID, "LightPower_worldspaceGeral");
     GLuint LightIDPowerBotoes = glGetUniformLocation(programID, "LightPower_worldspaceBotoes");
  
@@ -458,6 +464,7 @@ int main( void )
 			glm::vec3 lightPos = glm::vec3(2,8,2);
       glUniform3f(LightIDPosition, LightPosition.x, LightPosition.y, LightPosition.z);
       glUniform3f(LightIDPositionVerde, LightPositionVerde.x, LightPositionVerde.y, LightPositionVerde.z);
+      glUniform3f(LightIDPositionVermelho, LightPositionVermelho.x, LightPositionVermelho.y, LightPositionVermelho.z);
       glUniform1f(LightIDPowerGeral, LightPowerGeral);
 			glUniform1f(LightIDPowerBotoes, LightPowerBotoes);
 

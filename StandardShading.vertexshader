@@ -12,6 +12,7 @@ out vec3 Normal_cameraspace;
 out vec3 EyeDirection_cameraspace;
 out vec3 LightDirection_cameraspace;
 out vec3 LightDirection_cameraspaceVerde;
+out vec3 LightDirection_cameraspaceVermelho;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
@@ -19,6 +20,7 @@ uniform mat4 V;
 uniform mat4 M;
 uniform vec3 LightPosition_worldspace;
 uniform vec3 LightPosition_worldspaceVerde;
+uniform vec3 LightPosition_worldspaceVermelho;
 
 void main(){
 
@@ -39,6 +41,9 @@ void main(){
 
 	vec3 LightPosition_cameraspaceVerde = ( V * vec4(LightPosition_worldspaceVerde,1)).xyz;
 	LightDirection_cameraspaceVerde = LightDirection_cameraspaceVerde + EyeDirection_cameraspace;
+
+	vec3 LightPosition_cameraspaceVermelho = ( V * vec4(LightPosition_worldspaceVermelho,1)).xyz;
+	LightDirection_cameraspaceVermelho = LightDirection_cameraspaceVermelho + EyeDirection_cameraspace;
 	
 	// Normal of the the vertex, in camera space
 	Normal_cameraspace = ( V * M * vec4(vertexNormal_modelspace,0)).xyz; // Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not.
