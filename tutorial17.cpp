@@ -68,6 +68,8 @@ GLuint elementbuffer;
 float LightPowerGeral = 30.0;
 float LightPowerBotoes = 0.30;
 
+int jogoPausado = 1;
+
 void addTweakBar() {
     // Initialize the GUI
     TwInit(TW_OPENGL_CORE, NULL);
@@ -174,6 +176,9 @@ void KeyBoardCameraPosition(float deltaTime) {
 			anguloProjection = 60.0f;
 		}
 	}
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+      jogoPausado = 0;
+    }
     
 }
 
@@ -285,9 +290,7 @@ void configAttributes(){
 }
 
  
-int main( void )
-{
- 
+int main( void ){
     // Initialise GLFW
     if( !glfwInit() )
     {
@@ -368,6 +371,7 @@ int main( void )
     // Load the texture
     GLuint Texture = loadDDS("texture/mesa.dds");
     //GLuint Genius = loadDDS("texture/uvmap.DDS");
+    GLuint TelaInicio = loadDDS("texture/telainicial.dds");
     GLuint Base = loadDDS("texture/preto.dds");
     GLuint Base2 = loadDDS("texture/cinza.dds");
     GLuint BotaoVerde = loadDDS("texture/verde.dds");
@@ -389,6 +393,9 @@ int main( void )
     std::vector<glm::vec3> indexed_vertices;
     std::vector<glm::vec2> indexed_uvs;
     std::vector<glm::vec3> indexed_normals;
+
+    loadOBJ("obj/telainicial.obj", vertices, uvs, normals);
+    GLuint sizeTelaInicio = vertices.size();
 
     loadOBJ("obj/mesa.obj", vertices, uvs, normals);
    	GLuint sizeMesa = vertices.size();
@@ -460,7 +467,7 @@ int main( void )
 				lastTime += 1.0;
 			}
 			
-			if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) animationCamera(deltaTime, currentTime);
+			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) animationCamera(deltaTime, currentTime);
 			
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the screen
 			
@@ -480,6 +487,7 @@ int main( void )
       glUniform3f(LightIDPositionAzul, LightPositionAzul.x, LightPositionAzul.y, LightPositionAzul.z);
       glUniform3f(LightIDPositionAmarelo, LightPositionAmarelo.x, LightPositionAmarelo.y, LightPositionAmarelo.z);
       
+    if (jogoPausado == 0){
       glUniform1f(LightIDPowerGeral, LightPowerGeral);
 			glUniform1f(LightIDPowerBotoes, LightPowerBotoes);
 
@@ -506,6 +514,7 @@ int main( void )
 				glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
 				ConfigAndRender(MatrixID, Base2, TextureID, sizeBaseLiga-sizeBaseMaior, sizeBaseLiga, ModelMatrix2);
 			}
+
 
 			{ // BOTAO VERDE
 				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
@@ -555,6 +564,13 @@ int main( void )
 				glm::mat4 ModelMatrix2 = TranslationMatrix * RotationMatrix * ScalingMatrix;
 				ConfigAndRender(MatrixID, Centro1, TextureID, sizeCentroLigaMenor-sizeCentroLigaMaior, sizeCentroLigaMenor, ModelMatrix2);
 			}
+    }else{
+      glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);
+      glm::mat4 TranslationMatrix = translate(mat4(), gPosition1); // A bit to the left
+      glm::mat4 ScalingMatrix = scale(mat4(), vec3(1.0f, 1.0f, 1.0f));
+      glm::mat4 ModelMatrix = TranslationMatrix * RotationMatrix * ScalingMatrix;
+      ConfigAndRender(MatrixID, TelaInicio, TextureID, 0, sizeTelaInicio, ModelMatrix);
+    }
 
 
 
