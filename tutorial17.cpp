@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <vector>
 
+#include <chrono>
+#include <thread>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -47,10 +49,10 @@ float widthProjection = 4.0f;
 float heightProjection = 3.0f;
 float farProjection = 0.1f;
 float nearProjection = 100.0f;
- 
 vec3 gPosition2( 1.5f, 0.0f, 0.0f); //Obejeto2 Posi��o
 quat gOrientation2;
- 
+vec3 sequecia(1.0f, 1.0f, 1.0f);
+int myArray[] = {2, 6};
 bool gLookAtOther = true;
 bool apertou = false;
 float angleRad = 0.0;
@@ -66,9 +68,14 @@ GLuint vertexUVID;
 GLuint vertexNormal_modelspaceID;
 GLuint elementbuffer;
 float LightPowerGeral = 30.0;
-float LightPowerBotoes = 0.30;
+float LightPowerVerde = 0.0;
+float LightPowerVermelho = 0.0;
+float LightPowerAzul = 0.0;
+float LightPowerAmarelo = 0.0;
 
 int jogoPausado = 1;
+using namespace std::this_thread; // sleep_for, sleep_until
+using namespace std::chrono; // nanoseconds, system_clock, seconds
 
 void addTweakBar() {
     // Initialize the GUI
@@ -107,7 +114,6 @@ void addTweakBar() {
 
     //Light
     TwAddVarRW(ViewGUI, "Luz Geral", TW_TYPE_FLOAT, &LightPowerGeral, "step=0.01");
-    TwAddVarRW(ViewGUI, "Luz Botoes", TW_TYPE_FLOAT, &LightPowerBotoes, "step=0.01");
 
     TwAddVarRW(ViewGUI, "Luz Geral X", TW_TYPE_FLOAT, &LightPosition.x, "step=0.01");
     TwAddVarRW(ViewGUI, "Luz Geral Y", TW_TYPE_FLOAT, &LightPosition.y, "step=0.01");
@@ -137,7 +143,11 @@ void addTweakBar() {
     // TwAddVarRW(ProjectionGUI, "Far Proje��o", TW_TYPE_FLOAT, &farProjection, "step=0.01");    
 }
 
-void KeyBoardCameraPosition(float deltaTime) {
+// void startGameSequence() {
+  
+// }
+
+void KeyBoardInteraction(float deltaTime) {
 	if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) { // F1- FRENTE
 		cameraOrientation.x = 0.0;
 		cameraOrientation.y = 5.0;
@@ -162,24 +172,53 @@ void KeyBoardCameraPosition(float deltaTime) {
 		lookOrientation.y = 0.17;
 		lookOrientation.z = 0.0;
 	}
-	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) { // TESTES
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
 		glm::lookAt(
 			glm::vec3(cameraOrientation.x = 0.0f, cameraOrientation.y = 15.0f, cameraOrientation.z = 7.0f), // Camera is here
 			glm::vec3(lookOrientation.x = 0.0f, lookOrientation.y = 16.66f, lookOrientation.z = 5.0f ), // and looks here
 			glm::vec3(upOrientation.x = 0.0f, upOrientation.y = 1.0f, upOrientation.z = 0.0f)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 	}
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) { // TESTES
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
 		if (anguloProjection == 60.0f) {
 			anguloProjection = 45.0f;
 		}else{
 			anguloProjection = 60.0f;
 		}
 	}
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-      jogoPausado = 0;
-    }
-    
+  if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+    jogoPausado = 0;
+  }
+  if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+    // size_t myArraySize = sizeof(myArray) / sizeof(int);
+    // for(int i = 0; i < myArraySize; i++){
+    //   // if (myArray[i] == 2) {
+    //     sleep_for(nanoseconds(1000));
+    //   // }
+    //   printf("%d \n", myArray[i]);
+    // }
+    LightPowerAzul = 0.2;
+  }
+  if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS) {
+    LightPowerAzul = 0.2;
+  }else {
+    LightPowerAzul = 0.0;
+  }
+  if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS) {
+    LightPowerVermelho = 0.2;
+  }else {
+    LightPowerVermelho = 0.0;
+  }
+  if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS) {
+    LightPowerAmarelo = 0.2;
+  }else {
+    LightPowerAmarelo = 0.0;
+  }
+  if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS) {
+    LightPowerVerde = 0.2;
+  }else {
+    LightPowerVerde = 0.0;
+  }
 }
 
 void animationCamera(float deltaTime, float currentTime) {
@@ -394,47 +433,37 @@ int main( void ){
     std::vector<glm::vec2> indexed_uvs;
     std::vector<glm::vec3> indexed_normals;
 
-    loadOBJ("obj/telainicial.obj", vertices, uvs, normals);
+    loadOBJ("objetos/tela_inicial.obj", vertices, uvs, normals);
     GLuint sizeTelaInicio = vertices.size();
 
-    loadOBJ("obj/mesa.obj", vertices, uvs, normals);
+    loadOBJ("objetos/mesa.obj", vertices, uvs, normals);
    	GLuint sizeMesa = vertices.size();
 
-    loadOBJ("obj/genius_base.obj", vertices, uvs, normals);
+    loadOBJ("objetos/base_maior_novo.obj", vertices, uvs, normals);
     GLuint sizeBaseMaior = vertices.size();
     
-		loadOBJ("obj/genius_base2.obj", vertices, uvs, normals);
+		loadOBJ("objetos/base_menor_novo.obj", vertices, uvs, normals);
     GLuint sizeBaseLiga = vertices.size();
     
-		loadOBJ("obj/genius_verde.obj", vertices, uvs, normals);
+		loadOBJ("objetos/btn_verde.obj", vertices, uvs, normals);
     GLuint sizeVerde = vertices.size();
     
-		loadOBJ("obj/genius_vermelho.obj", vertices, uvs, normals);
+		loadOBJ("objetos/btn_vermelho.obj", vertices, uvs, normals);
     GLuint sizeVermelho = vertices.size();
     
-		loadOBJ("obj/genius_amarelo.obj", vertices, uvs, normals);
+		loadOBJ("objetos/btn_amarelo.obj", vertices, uvs, normals);
     GLuint sizeAmarelo = vertices.size();
     
-		loadOBJ("obj/genius_azul.obj", vertices, uvs, normals);
+		loadOBJ("objetos/btn_azul.obj", vertices, uvs, normals);
     GLuint sizeAzul = vertices.size();
     
-		loadOBJ("obj/genius_centro.obj", vertices, uvs, normals);
+		loadOBJ("objetos/btn_ligar_centro.obj", vertices, uvs, normals);
     GLuint sizeCentroLigaMaior = vertices.size();
     
-		loadOBJ("obj/genius_centro1.obj", vertices, uvs, normals);
+		loadOBJ("objetos/btn_ligar_centro2.obj", vertices, uvs, normals);
     GLuint sizeCentroLigaMenor = vertices.size();
 
     indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs, indexed_normals);
-
-    // printf("TAMANHO MESA %d\n", sizeBaseMaior-sizeMesa);
-    // printf("TAMANHO BASE MAIOR %d\n", sizeBaseMaior);
-    // printf("TAMANHO BASE LIGA %d\n", sizeBaseLiga);
-    // printf("TAMANHO BOT�O VERDE %d\n", sizeVerde);
-    // printf("TAMANHO BOT�O VERMELHO %d\n", sizeVermelho);
-    // printf("TAMANHO BOT�O AMARELO %d\n", sizeAmarelo);
-    // printf("TAMANHO BOT�O AZUL %d\n", sizeAzul);
-    // printf("TAMANHO CENTRO LIGA MAIOR %d\n", sizeCentroLigaMaior);
-    // printf("TAMANHO CENTRO LIGA MENOR %d\n", sizeCentroLigaMenor);
 
     addBuffer(indexed_vertices,indexed_uvs,indexed_normals,indices);
 
@@ -447,6 +476,11 @@ int main( void ){
     GLuint LightIDPositionAmarelo = glGetUniformLocation(programID, "LightPosition_worldspaceAmarelo");
 		
     GLuint LightIDPowerGeral = glGetUniformLocation(programID, "LightPower_worldspaceGeral");
+    GLuint LightIDPowerVerde = glGetUniformLocation(programID, "LightPower_worldspaceVerde");
+    GLuint LightIDPowerVermelho = glGetUniformLocation(programID, "LightPower_worldspaceVermelho");
+    GLuint LightIDPowerAzul = glGetUniformLocation(programID, "LightPower_worldspaceAzul");
+    GLuint LightIDPowerAmarelo = glGetUniformLocation(programID, "LightPower_worldspaceAmarelo");
+
     GLuint LightIDPowerBotoes = glGetUniformLocation(programID, "LightPower_worldspaceBotoes");
  
     // For speed computation
@@ -454,7 +488,6 @@ int main( void ){
     double lastFrameTime = lastTime;
     int nbFrames = 0;
     glm::mat4 ModelMatrix2;
-    
     do{
 			// Measure speed
 			double currentTime = glfwGetTime();
@@ -462,7 +495,7 @@ int main( void ){
 			lastFrameTime = currentTime;
 			nbFrames++;
 			if (currentTime - lastTime >= 1.0){
-				printf("%f ms/frame\n", 1000.0/double(nbFrames));
+				// printf("%f ms/frame\n", 1000.0/double(nbFrames));
 				nbFrames = 0;
 				lastTime += 1.0;
 			}
@@ -473,7 +506,7 @@ int main( void ){
 			
 			// Use our shader
 			glUseProgram(programID);
-			KeyBoardCameraPosition(deltaTime);
+			KeyBoardInteraction(deltaTime);
 
 			configAttributes();
 
@@ -489,7 +522,10 @@ int main( void ){
       
     if (jogoPausado == 0){
       glUniform1f(LightIDPowerGeral, LightPowerGeral);
-			glUniform1f(LightIDPowerBotoes, LightPowerBotoes);
+			glUniform1f(LightIDPowerVerde, LightPowerVerde);
+      glUniform1f(LightIDPowerVermelho, LightPowerVermelho);
+      glUniform1f(LightIDPowerAzul, LightPowerAzul);
+      glUniform1f(LightIDPowerAmarelo, LightPowerAmarelo);
 
 			{ // MESA
 				glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation1.y, gOrientation1.x, gOrientation1.z);

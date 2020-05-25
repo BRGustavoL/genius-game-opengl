@@ -24,7 +24,10 @@ uniform vec3 LightPosition_worldspaceAzul;
 uniform vec3 LightPosition_worldspaceAmarelo;
 
 uniform float LightPower_worldspaceGeral;
-uniform float LightPower_worldspaceBotoes;
+uniform float LightPower_worldspaceVerde;
+uniform float LightPower_worldspaceVermelho;
+uniform float LightPower_worldspaceAzul;
+uniform float LightPower_worldspaceAmarelo;
 
 void main(){
 
@@ -35,8 +38,11 @@ void main(){
 	vec3 LightColorAmarelo = vec3(1,1,0);
 
 	float LightPowerGeral = LightPower_worldspaceGeral;
-	float LightPowerBotoes = LightPower_worldspaceBotoes;
-	
+	float LightPowerVerde = LightPower_worldspaceVerde;
+	float LightPowerVermelho = LightPower_worldspaceVermelho;
+	float LightPowerAzul = LightPower_worldspaceAzul;
+	float LightPowerAmarelo = LightPower_worldspaceAmarelo;
+
 	vec3 MaterialDiffuseColor = texture( myTextureSampler, UV ).rgb;
 	vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
 	vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
@@ -78,15 +84,15 @@ void main(){
 		MaterialDiffuseColor * LightColor * LightPowerGeral * cosTheta / (distance*distance) +
 		MaterialSpecularColor * LightColor * LightPowerGeral * pow(cosAlpha,5) / (distance*distance) +
 		
-		MaterialDiffuseColor * LightColorVerde * LightPowerBotoes * cosThetaVerde / (distanceVerde*distanceVerde) +
-		MaterialSpecularColor * LightColorVerde * LightPowerBotoes * pow(cosAlphaVerde,5) / (distanceVerde*distanceVerde) +
+		MaterialDiffuseColor * LightColorVerde * LightPowerVerde * cosThetaVerde / (distanceVerde*distanceVerde) +
+		MaterialSpecularColor * LightColorVerde * LightPowerVerde * pow(cosAlphaVerde,5) / (distanceVerde*distanceVerde) +
 		
-		MaterialDiffuseColor * LightColorVermelho * LightPowerBotoes * cosThetaVermelho / (distanceVermelho*distanceVermelho) +
-		MaterialSpecularColor * LightColorVermelho * LightPowerBotoes * pow(cosAlphaVermelho,5) / (distanceVermelho*distanceVermelho) +
+		MaterialDiffuseColor * LightColorVermelho * LightPowerVermelho * cosThetaVermelho / (distanceVermelho*distanceVermelho) +
+		MaterialSpecularColor * LightColorVermelho * LightPowerVermelho * pow(cosAlphaVermelho,5) / (distanceVermelho*distanceVermelho) +
 
-		MaterialDiffuseColor * LightColorAzul * LightPowerBotoes * cosThetaAzul / (distanceAzul*distanceAzul) +
-		MaterialSpecularColor * LightColorAzul * LightPowerBotoes * pow(cosAlphaAzul,5) / (distanceAzul*distanceAzul) +
+		MaterialDiffuseColor * LightColorAzul * LightPowerAzul * cosThetaAzul / (distanceAzul*distanceAzul) +
+		MaterialSpecularColor * LightColorAzul * LightPowerAzul * pow(cosAlphaAzul,5) / (distanceAzul*distanceAzul) +
 
-		MaterialDiffuseColor * LightColorAmarelo * LightPowerBotoes * cosThetaAmarelo / (distanceAmarelo*distanceAmarelo) +
-		MaterialSpecularColor * LightColorAmarelo * LightPowerBotoes * pow(cosAlphaAmarelo,5) / (distanceAmarelo*distanceAmarelo);
+		MaterialDiffuseColor * LightColorAmarelo * LightPowerAmarelo * cosThetaAmarelo / (distanceAmarelo*distanceAmarelo) +
+		MaterialSpecularColor * LightColorAmarelo * LightPowerAmarelo * pow(cosAlphaAmarelo,5) / (distanceAmarelo*distanceAmarelo);
 }
