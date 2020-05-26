@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <thread>
+#include <unistd.h>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -52,7 +53,7 @@ float nearProjection = 100.0f;
 vec3 gPosition2( 1.5f, 0.0f, 0.0f); //Obejeto2 Posi��o
 quat gOrientation2;
 vec3 sequecia(1.0f, 1.0f, 1.0f);
-int myArray[] = {2, 6};
+int myArray = 2;
 bool gLookAtOther = true;
 bool apertou = false;
 float angleRad = 0.0;
@@ -81,24 +82,9 @@ void addTweakBar() {
     // Initialize the GUI
     TwInit(TW_OPENGL_CORE, NULL);
     TwWindowSize(1024, 768);
-    // TwBar * EulerGUI = TwNewBar("Euler settings");
-   // TwBar * QuaternionGUI = TwNewBar("Quaternion settings");
     TwBar * ViewGUI = TwNewBar("View Settings");
-    // TwBar * ProjectionGUI = TwNewBar("Projection Settings");
-    // TwSetParam(EulerGUI, NULL, "refresh", TW_PARAM_CSTRING, 1, "0.1");
-    //TwSetParam(QuaternionGUI, NULL, "position", TW_PARAM_CSTRING, 1, "808 16");
     TwSetParam(ViewGUI, NULL, "position", TW_PARAM_CSTRING, 1, "16 408");
     TwSetParam(ViewGUI, NULL, "position", TW_PARAM_CSTRING, 1, "808 408");
- 
-    // TwAddVarRW(EulerGUI, "Euler X", TW_TYPE_FLOAT, &gOrientation1.x, "step=0.01");
-    // TwAddVarRW(EulerGUI, "Euler Y", TW_TYPE_FLOAT, &gOrientation1.y, "step=0.01");
-    // TwAddVarRW(EulerGUI, "Euler Z", TW_TYPE_FLOAT, &gOrientation1.z, "step=0.01");
-    // TwAddVarRW(EulerGUI, "Pos X"  , TW_TYPE_FLOAT, &gPosition1.x, "step=0.1");
-    // TwAddVarRW(EulerGUI, "Pos Y"  , TW_TYPE_FLOAT, &gPosition1.y, "step=0.1");
-    // TwAddVarRW(EulerGUI, "Pos Z"  , TW_TYPE_FLOAT, &gPosition1.z, "step=0.1");
- 
-    //TwAddVarRW(QuaternionGUI, "Quaternion", TW_TYPE_QUAT4F, &gOrientation2, "showval=true open=true ");
-    //TwAddVarRW(QuaternionGUI, "Use LookAt", TW_TYPE_BOOL8 , &gLookAtOther, "help='Look at the other monkey ?'");
  
     //View
     TwAddVarRW(ViewGUI, "Camera X", TW_TYPE_FLOAT, &cameraOrientation.x, "step=0.01");
@@ -110,7 +96,6 @@ void addTweakBar() {
     TwAddVarRW(ViewGUI, "UP X", TW_TYPE_FLOAT, &upOrientation.x, "step=0.01");
     TwAddVarRW(ViewGUI, "UP Y", TW_TYPE_FLOAT, &upOrientation.y, "step=0.01");
     TwAddVarRW(ViewGUI, "UP Z", TW_TYPE_FLOAT, &upOrientation.z, "step=0.01");
-
 
     //Light
     TwAddVarRW(ViewGUI, "Luz Geral", TW_TYPE_FLOAT, &LightPowerGeral, "step=0.01");
@@ -134,13 +119,6 @@ void addTweakBar() {
     TwAddVarRW(ViewGUI, "Luz Amarelo X", TW_TYPE_FLOAT, &LightPositionAmarelo.x, "step=0.01");
     TwAddVarRW(ViewGUI, "Luz Amarelo Y", TW_TYPE_FLOAT, &LightPositionAmarelo.y, "step=0.01");
     TwAddVarRW(ViewGUI, "Luz Amarelo Z", TW_TYPE_FLOAT, &LightPositionAmarelo.z, "step=0.01");
- 
-    //Projection
-    // TwAddVarRW(ProjectionGUI, "�gulo de Proje��o", TW_TYPE_FLOAT, &anguloProjection, "step=0.01");
-    // TwAddVarRW(ProjectionGUI, "Largura Proje��o", TW_TYPE_FLOAT, &widthProjection, "step=0.01");
-    // TwAddVarRW(ProjectionGUI, "Altura Proje��o", TW_TYPE_FLOAT, &heightProjection, "step=0.01");
-    // TwAddVarRW(ProjectionGUI, "Near Proje��o", TW_TYPE_FLOAT, &nearProjection, "step=0.01");
-    // TwAddVarRW(ProjectionGUI, "Far Proje��o", TW_TYPE_FLOAT, &farProjection, "step=0.01");    
 }
 
 // void startGameSequence() {
@@ -189,16 +167,9 @@ void KeyBoardInteraction(float deltaTime) {
   if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
     jogoPausado = 0;
   }
-  if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
-    // size_t myArraySize = sizeof(myArray) / sizeof(int);
-    // for(int i = 0; i < myArraySize; i++){
-    //   // if (myArray[i] == 2) {
-    //     sleep_for(nanoseconds(1000));
-    //   // }
-    //   printf("%d \n", myArray[i]);
-    // }
-    LightPowerAzul = 0.2;
-  }
+
+  
+  
   if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS) {
     LightPowerAzul = 0.2;
   }else {
@@ -218,6 +189,12 @@ void KeyBoardInteraction(float deltaTime) {
     LightPowerVerde = 0.2;
   }else {
     LightPowerVerde = 0.0;
+  }
+  if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+    if (myArray == 2) {
+      myArray = 3;
+      LightPowerAzul = 0.2;
+    }
   }
 }
 
@@ -506,12 +483,12 @@ int main( void ){
 			
 			// Use our shader
 			glUseProgram(programID);
-			KeyBoardInteraction(deltaTime);
 
 			configAttributes();
 
 			// Index buffer
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+			KeyBoardInteraction(deltaTime);
 
 			glm::vec3 lightPos = glm::vec3(2,8,2);
       glUniform3f(LightIDPosition, LightPosition.x, LightPosition.y, LightPosition.z);
@@ -608,7 +585,7 @@ int main( void ){
       ConfigAndRender(MatrixID, TelaInicio, TextureID, 0, sizeTelaInicio, ModelMatrix);
     }
 
-
+    
 
 			glDisableVertexAttribArray(0);
 			glDisableVertexAttribArray(1);
@@ -620,6 +597,10 @@ int main( void ){
 			// Swap buffers
 			glfwSwapBuffers(window);
 			glfwPollEvents();
+      if (myArray == 3) {
+        sleep(1);
+        myArray = 2;
+      }
  
     } // Check if the ESC key was pressed or the window was closed
     while(glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
