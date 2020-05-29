@@ -52,8 +52,14 @@ float farProjection = 0.1f;
 float nearProjection = 100.0f;
 vec3 gPosition2( 1.5f, 0.0f, 0.0f); //Obejeto2 Posi��o
 quat gOrientation2;
-vec3 sequecia(1.0f, 1.0f, 1.0f);
-int myArray = 2;
+int sequencia[4][5] = {
+  {4, 8},
+  {2, 6, 4, 4}
+};
+int sequenciaJogador[] = {};
+int indexLinha = 0;
+int indexColuna = 0;
+int indexJogador = 0;
 bool gLookAtOther = true;
 bool apertou = false;
 float angleRad = 0.0;
@@ -121,10 +127,6 @@ void addTweakBar() {
     TwAddVarRW(ViewGUI, "Luz Amarelo Z", TW_TYPE_FLOAT, &LightPositionAmarelo.z, "step=0.01");
 }
 
-// void startGameSequence() {
-  
-// }
-
 void KeyBoardInteraction(float deltaTime) {
 	if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) { // F1- FRENTE
 		cameraOrientation.x = 0.0;
@@ -167,9 +169,6 @@ void KeyBoardInteraction(float deltaTime) {
   if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
     jogoPausado = 0;
   }
-
-  
-  
   if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS) {
     LightPowerAzul = 0.2;
   }else {
@@ -191,9 +190,21 @@ void KeyBoardInteraction(float deltaTime) {
     LightPowerVerde = 0.0;
   }
   if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
-    if (myArray == 2) {
-      myArray = 3;
+    if (sequencia[indexLinha][indexColuna] == 2) {
+      indexLinha++;
       LightPowerAzul = 0.2;
+    }
+    else if (sequencia[indexLinha][indexColuna] == 6) {
+      indexLinha++;
+      LightPowerVermelho = 0.2;
+    }
+    else if (sequencia[indexLinha][indexColuna] == 8) {
+      indexLinha++;
+      LightPowerVerde = 0.2;
+    }
+    else if (sequencia[indexLinha][indexColuna] == 4) {
+      indexLinha++;
+      LightPowerAmarelo = 0.2;
     }
   }
 }
@@ -597,9 +608,13 @@ int main( void ){
 			// Swap buffers
 			glfwSwapBuffers(window);
 			glfwPollEvents();
-      if (myArray == 3) {
+      if (sequencia[indexLinha-1][indexColuna] == 2 || 
+      sequencia[indexLinha-1][indexColuna] == 6 || 
+      sequencia[indexLinha-1][indexColuna] == 8 || 
+      sequencia[indexLinha-1][indexColuna] == 4) {
         sleep(1);
-        myArray = 2;
+        // printf("%d\n", sequenciaJogador[indexJogador-1]);
+        printf("%d\n", (rand() % 8 + (2 || 4 || 6 || 8) != 0));
       }
  
     } // Check if the ESC key was pressed or the window was closed
