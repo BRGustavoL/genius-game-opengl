@@ -53,13 +53,20 @@ float nearProjection = 100.0f;
 vec3 gPosition2( 1.5f, 0.0f, 0.0f); //Obejeto2 Posi��o
 quat gOrientation2;
 int sequencia[4][5] = {
-  {4, 8},
-  {2, 6, 4, 4}
+  {2, 6, 4, 6, 2},
+  {4, 6, 4, 6, 2},
+  {6, 2, 4, 6, 2},
+  {8, 6, 4, 6, 2}
 };
 int sequenciaJogador[] = {};
+int pontuacao = 0;
 int indexLinha = 0;
 int indexColuna = 0;
 int indexJogador = 0;
+int indexAzul = 0;
+int indexAmarelo = 0;
+int indexVermelho = 0;
+int indexVerde = 0;
 bool gLookAtOther = true;
 bool apertou = false;
 float angleRad = 0.0;
@@ -84,6 +91,9 @@ int jogoPausado = 1;
 using namespace std::this_thread; // sleep_for, sleep_until
 using namespace std::chrono; // nanoseconds, system_clock, seconds
 
+void callSleep() {
+  sleep(1);
+}
 void addTweakBar() {
     // Initialize the GUI
     TwInit(TW_OPENGL_CORE, NULL);
@@ -125,6 +135,24 @@ void addTweakBar() {
     TwAddVarRW(ViewGUI, "Luz Amarelo X", TW_TYPE_FLOAT, &LightPositionAmarelo.x, "step=0.01");
     TwAddVarRW(ViewGUI, "Luz Amarelo Y", TW_TYPE_FLOAT, &LightPositionAmarelo.y, "step=0.01");
     TwAddVarRW(ViewGUI, "Luz Amarelo Z", TW_TYPE_FLOAT, &LightPositionAmarelo.z, "step=0.01");
+}
+
+int insereArrayUsuario(int valor) {
+  for (int i = 0; i <= sizeof(sequenciaJogador); i++) {
+    sequenciaJogador[i] = valor;
+    // printf("Jogador: %d \n", sequenciaJogador[i]);
+  }
+}
+
+int validaAcerto() {
+  for(int i = 0; i <= sizeof(sequenciaJogador); i++) {
+    for(int j = 0; j <= sizeof(sequencia[0][0]); j++) {
+      if (sequenciaJogador[i] == sequencia[0][j]) {
+        pontuacao++;
+        printf("-- ACERTOU --\n");
+      }
+    }
+  }
 }
 
 void KeyBoardInteraction(float deltaTime) {
@@ -171,41 +199,56 @@ void KeyBoardInteraction(float deltaTime) {
   }
   if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS) {
     LightPowerAzul = 0.2;
+    indexAzul++;
+    insereArrayUsuario(2);
+    validaAcerto();
   }else {
     LightPowerAzul = 0.0;
   }
   if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS) {
     LightPowerVermelho = 0.2;
+    indexVermelho++;
+    insereArrayUsuario(6);
+    validaAcerto();
   }else {
     LightPowerVermelho = 0.0;
   }
   if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS) {
     LightPowerAmarelo = 0.2;
+    indexAmarelo++;
+    insereArrayUsuario(4);
+    validaAcerto();
   }else {
     LightPowerAmarelo = 0.0;
   }
   if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS) {
     LightPowerVerde = 0.2;
+    indexVerde++;
+    insereArrayUsuario(8);
+    validaAcerto();
   }else {
     LightPowerVerde = 0.0;
   }
   if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
     if (sequencia[indexLinha][indexColuna] == 2) {
-      indexLinha++;
+      indexColuna++;
       LightPowerAzul = 0.2;
     }
     else if (sequencia[indexLinha][indexColuna] == 6) {
-      indexLinha++;
+      indexColuna++;
       LightPowerVermelho = 0.2;
     }
     else if (sequencia[indexLinha][indexColuna] == 8) {
-      indexLinha++;
+      indexColuna++;
       LightPowerVerde = 0.2;
     }
     else if (sequencia[indexLinha][indexColuna] == 4) {
-      indexLinha++;
+      indexColuna++;
       LightPowerAmarelo = 0.2;
     }
+  }
+  if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS) {
+    printf("PONTOS: %d\n", pontuacao);
   }
 }
 
@@ -596,8 +639,6 @@ int main( void ){
       ConfigAndRender(MatrixID, TelaInicio, TextureID, 0, sizeTelaInicio, ModelMatrix);
     }
 
-    
-
 			glDisableVertexAttribArray(0);
 			glDisableVertexAttribArray(1);
 			glDisableVertexAttribArray(2); 
@@ -608,15 +649,18 @@ int main( void ){
 			// Swap buffers
 			glfwSwapBuffers(window);
 			glfwPollEvents();
-      if (sequencia[indexLinha-1][indexColuna] == 2 || 
-      sequencia[indexLinha-1][indexColuna] == 6 || 
-      sequencia[indexLinha-1][indexColuna] == 8 || 
-      sequencia[indexLinha-1][indexColuna] == 4) {
-        sleep(1);
-        // printf("%d\n", sequenciaJogador[indexJogador-1]);
-        printf("%d\n", (rand() % 8 + (2 || 4 || 6 || 8) != 0));
+      if (sequencia[indexLinha][indexColuna-1] == 2 || 
+      sequencia[indexLinha][indexColuna-1] == 6 || 
+      sequencia[indexLinha][indexColuna-1] == 8 || 
+      sequencia[indexLinha][indexColuna-1] == 4) {
+        callSleep();
       }
- 
+
+      // printf("Vermelho: %d\n", indexVermelho);
+      // printf("Verde: %d\n", indexVerde);
+      // printf("Amarelo: %d\n", indexAmarelo);
+      // printf("Azul: %d\n", indexAzul);
+
     } // Check if the ESC key was pressed or the window was closed
     while(glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
  
