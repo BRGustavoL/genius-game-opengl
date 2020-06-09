@@ -52,11 +52,12 @@ float farProjection = 0.1f;
 float nearProjection = 100.0f;
 vec3 gPosition2( 1.5f, 0.0f, 0.0f); //Obejeto2 Posi��o
 quat gOrientation2;
-int sequencia[4][5] = {
-  {2, 6, 4, 6, 2},
-  {4, 6, 4, 6, 2},
-  {6, 2, 4, 6, 2},
-  {8, 6, 4, 6, 2}
+int sequencia[5][6] = {
+  {2, 6},
+  {4, 6, 4},
+  {6, 2, 4, 6},
+  {8, 6, 4, 6, 2},
+  {8, 2, 4, 8, 2, 8}
 };
 int sequenciaJogador[] = {};
 int pontuacao = 0;
@@ -67,6 +68,7 @@ int indexAzul = 0;
 int indexAmarelo = 0;
 int indexVermelho = 0;
 int indexVerde = 0;
+int contadormaroto = 0;
 bool gLookAtOther = true;
 bool apertou = false;
 float angleRad = 0.0;
@@ -91,9 +93,15 @@ int jogoPausado = 1;
 using namespace std::this_thread; // sleep_for, sleep_until
 using namespace std::chrono; // nanoseconds, system_clock, seconds
 
-void callSleep() {
-  sleep(1);
+void callSleep(int timer) {
+  sleep(timer);
 }
+
+void resetGame() {
+  indexColuna = 0;
+  printf("JOGO RESETADO\n");
+}
+
 void addTweakBar() {
     // Initialize the GUI
     TwInit(TW_OPENGL_CORE, NULL);
@@ -137,14 +145,7 @@ void addTweakBar() {
     TwAddVarRW(ViewGUI, "Luz Amarelo Z", TW_TYPE_FLOAT, &LightPositionAmarelo.z, "step=0.01");
 }
 
-int insereArrayUsuario(int valor) {
-  for (int i = 0; i <= sizeof(sequenciaJogador); i++) {
-    sequenciaJogador[i] = valor;
-    // printf("Jogador: %d \n", sequenciaJogador[i]);
-  }
-}
-
-int validaAcerto() {
+void validaAcerto() {
   for(int i = 0; i <= sizeof(sequenciaJogador); i++) {
     for(int j = 0; j <= sizeof(sequencia[0][0]); j++) {
       if (sequenciaJogador[i] == sequencia[0][j]) {
@@ -153,6 +154,14 @@ int validaAcerto() {
       }
     }
   }
+}
+
+void insereArrayUsuario(int valor) {
+  for (int i = 0; i <= sizeof(sequenciaJogador); i++) {
+    sequenciaJogador[i] = valor;
+    // printf("Jogador: %d \n", sequenciaJogador[i]);
+  }
+  validaAcerto();
 }
 
 void KeyBoardInteraction(float deltaTime) {
@@ -187,6 +196,9 @@ void KeyBoardInteraction(float deltaTime) {
 			glm::vec3(upOrientation.x = 0.0f, upOrientation.y = 1.0f, upOrientation.z = 0.0f)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 	}
+  if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+		resetGame();
+	}
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
 		if (anguloProjection == 60.0f) {
 			anguloProjection = 45.0f;
@@ -201,7 +213,6 @@ void KeyBoardInteraction(float deltaTime) {
     LightPowerAzul = 0.2;
     indexAzul++;
     insereArrayUsuario(2);
-    validaAcerto();
   }else {
     LightPowerAzul = 0.0;
   }
@@ -209,7 +220,6 @@ void KeyBoardInteraction(float deltaTime) {
     LightPowerVermelho = 0.2;
     indexVermelho++;
     insereArrayUsuario(6);
-    validaAcerto();
   }else {
     LightPowerVermelho = 0.0;
   }
@@ -217,7 +227,6 @@ void KeyBoardInteraction(float deltaTime) {
     LightPowerAmarelo = 0.2;
     indexAmarelo++;
     insereArrayUsuario(4);
-    validaAcerto();
   }else {
     LightPowerAmarelo = 0.0;
   }
@@ -225,10 +234,16 @@ void KeyBoardInteraction(float deltaTime) {
     LightPowerVerde = 0.2;
     indexVerde++;
     insereArrayUsuario(8);
-    validaAcerto();
   }else {
     LightPowerVerde = 0.0;
   }
+
+  if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) indexLinha = 0; printf("Sequencia %d selecionada\n", indexLinha);
+  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) indexLinha = 1; printf("Sequencia %d selecionada\n", indexLinha);
+  if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) indexLinha = 2; printf("Sequencia %d selecionada\n", indexLinha);
+  if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) indexLinha = 3; printf("Sequencia %d selecionada\n", indexLinha);
+  if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) indexLinha = 4; printf("Sequencia %d selecionada\n", indexLinha);
+
   if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
     if (sequencia[indexLinha][indexColuna] == 2) {
       indexColuna++;
@@ -653,14 +668,8 @@ int main( void ){
       sequencia[indexLinha][indexColuna-1] == 6 || 
       sequencia[indexLinha][indexColuna-1] == 8 || 
       sequencia[indexLinha][indexColuna-1] == 4) {
-        callSleep();
+        callSleep(1);
       }
-
-      // printf("Vermelho: %d\n", indexVermelho);
-      // printf("Verde: %d\n", indexVerde);
-      // printf("Amarelo: %d\n", indexAmarelo);
-      // printf("Azul: %d\n", indexAzul);
-
     } // Check if the ESC key was pressed or the window was closed
     while(glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
  
