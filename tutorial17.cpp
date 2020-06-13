@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <algorithm>
 
 #include <chrono>
 #include <thread>
@@ -62,6 +63,7 @@ int sequencia[5][6] = {
   {8, 2, 4, 8, 2, 8}
 };
 int sequenciaJogador[] = {};
+int arrayVazio[] = {};
 int pontuacao = 0;
 int indexLinha = 0;
 int indexColuna = 0;
@@ -71,6 +73,7 @@ int indexAmarelo = 0;
 int indexVermelho = 0;
 int indexVerde = 0;
 int contadormaroto = 0;
+int indexAvancado = 0;
 bool gLookAtOther = true;
 bool apertou = false;
 float angleRad = 0.0;
@@ -96,13 +99,13 @@ int jogoPausado = 1;
 using namespace std::this_thread; // sleep_for, sleep_until
 using namespace std::chrono; // nanoseconds, system_clock, seconds
 
-void callSleep(int timer) {
-  sleep(timer);
-}
-
 void resetGame() {
   indexColuna = 0;
   printf("JOGO RESETADO\n");
+}
+
+void callSleep(int timer) {
+  sleep(timer);
 }
 
 void addTweakBar() {
@@ -114,43 +117,44 @@ void addTweakBar() {
   TwSetParam(ViewGUI, NULL, "position", TW_PARAM_CSTRING, 1, "808 408");
 
   //View
-  TwAddVarRW(ViewGUI, "Camera X", TW_TYPE_FLOAT, &cameraOrientation.x, "step=0.01");
-  TwAddVarRW(ViewGUI, "Camera Y", TW_TYPE_FLOAT, &cameraOrientation.y, "step=0.01");
-  TwAddVarRW(ViewGUI, "Camera Z", TW_TYPE_FLOAT, &cameraOrientation.z, "step=0.01");
-  TwAddVarRW(ViewGUI, "Look X", TW_TYPE_FLOAT, &lookOrientation.x, "step=0.01");
-  TwAddVarRW(ViewGUI, "Look Y", TW_TYPE_FLOAT, &lookOrientation.y, "step=0.01");
-  TwAddVarRW(ViewGUI, "Look Z", TW_TYPE_FLOAT, &lookOrientation.z, "step=0.01");
-  TwAddVarRW(ViewGUI, "UP X", TW_TYPE_FLOAT, &upOrientation.x, "step=0.01");
-  TwAddVarRW(ViewGUI, "UP Y", TW_TYPE_FLOAT, &upOrientation.y, "step=0.01");
-  TwAddVarRW(ViewGUI, "UP Z", TW_TYPE_FLOAT, &upOrientation.z, "step=0.01");
+  // TwAddVarRW(ViewGUI, "Camera X", TW_TYPE_FLOAT, &cameraOrientation.x, "step=0.01");
+  // TwAddVarRW(ViewGUI, "Camera Y", TW_TYPE_FLOAT, &cameraOrientation.y, "step=0.01");
+  // TwAddVarRW(ViewGUI, "Camera Z", TW_TYPE_FLOAT, &cameraOrientation.z, "step=0.01");
+  // TwAddVarRW(ViewGUI, "Look X", TW_TYPE_FLOAT, &lookOrientation.x, "step=0.01");
+  // TwAddVarRW(ViewGUI, "Look Y", TW_TYPE_FLOAT, &lookOrientation.y, "step=0.01");
+  // TwAddVarRW(ViewGUI, "Look Z", TW_TYPE_FLOAT, &lookOrientation.z, "step=0.01");
+  // TwAddVarRW(ViewGUI, "UP X", TW_TYPE_FLOAT, &upOrientation.x, "step=0.01");
+  // TwAddVarRW(ViewGUI, "UP Y", TW_TYPE_FLOAT, &upOrientation.y, "step=0.01");
+  // TwAddVarRW(ViewGUI, "UP Z", TW_TYPE_FLOAT, &upOrientation.z, "step=0.01");
 
   //Light
   TwAddVarRW(ViewGUI, "Luz Geral", TW_TYPE_FLOAT, &LightPowerGeral, "step=0.01");
+  TwAddVarRW(ViewGUI, "Luz Amarelo", TW_TYPE_FLOAT, &LightPowerAmarelo, "step=0.01");
+  TwAddVarRW(ViewGUI, "Luz Verde", TW_TYPE_FLOAT, &LightPowerVerde, "step=0.01");
+  TwAddVarRW(ViewGUI, "Luz Vermelha", TW_TYPE_FLOAT, &LightPowerVermelho, "step=0.01");
+  TwAddVarRW(ViewGUI, "Luz Azul", TW_TYPE_FLOAT, &LightPowerAzul, "step=0.01");
+  TwAddVarRW(ViewGUI, "Luz Tela Inicio", TW_TYPE_FLOAT, &LightPowerTelaInicio, "step=0.01");
+
   TwAddVarRW(ViewGUI, "Luz Geral X", TW_TYPE_FLOAT, &LightPosition.x, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Geral Y", TW_TYPE_FLOAT, &LightPosition.y, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Geral Z", TW_TYPE_FLOAT, &LightPosition.z, "step=0.01");
 
-  TwAddVarRW(ViewGUI, "Luz Verde", TW_TYPE_FLOAT, &LightPowerVerde, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Verde X", TW_TYPE_FLOAT, &LightPositionVerde.x, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Verde Y", TW_TYPE_FLOAT, &LightPositionVerde.y, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Verde Z", TW_TYPE_FLOAT, &LightPositionVerde.z, "step=0.01");
 
-  TwAddVarRW(ViewGUI, "Luz Vermelha", TW_TYPE_FLOAT, &LightPowerVermelho, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Vermelha X", TW_TYPE_FLOAT, &LightPositionVermelho.x, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Vermelha Y", TW_TYPE_FLOAT, &LightPositionVermelho.y, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Vermelha Z", TW_TYPE_FLOAT, &LightPositionVermelho.z, "step=0.01");
 
-  TwAddVarRW(ViewGUI, "Luz Azul", TW_TYPE_FLOAT, &LightPowerAzul, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Azul X", TW_TYPE_FLOAT, &LightPositionAzul.x, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Azul Y", TW_TYPE_FLOAT, &LightPositionAzul.y, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Azul Z", TW_TYPE_FLOAT, &LightPositionAzul.z, "step=0.01");
 
-  TwAddVarRW(ViewGUI, "Luz Amarelo", TW_TYPE_FLOAT, &LightPowerAmarelo, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Amarelo X", TW_TYPE_FLOAT, &LightPositionAmarelo.x, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Amarelo Y", TW_TYPE_FLOAT, &LightPositionAmarelo.y, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Amarelo Z", TW_TYPE_FLOAT, &LightPositionAmarelo.z, "step=0.01");
 
-  TwAddVarRW(ViewGUI, "Luz Tela Inicio", TW_TYPE_FLOAT, &LightPowerTelaInicio, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Tela Inicio X", TW_TYPE_FLOAT, &LightPositionTelaInicio.x, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Tela Inicio Y", TW_TYPE_FLOAT, &LightPositionTelaInicio.y, "step=0.01");
   TwAddVarRW(ViewGUI, "Luz Tela Inicio Z", TW_TYPE_FLOAT, &LightPositionTelaInicio.z, "step=0.01");
@@ -158,10 +162,10 @@ void addTweakBar() {
 
 void validaAcerto() {
   for(int i = 0; i <= sizeof(sequenciaJogador); i++) {
-    for(int j = 0; j <= sizeof(sequencia[0][0]); j++) {
-      if (sequenciaJogador[i] == sequencia[0][j]) {
+    for(int j = 0; j <= sizeof(sequencia[indexLinha][0]); j++) {
+      printf("SSASDAASD %d\n", sequencia[indexLinha][j]);
+      if (sequenciaJogador[i] == sequencia[indexLinha][j]) {
         pontuacao++;
-        printf("-- ACERTOU --\n");
       }
     }
   }
@@ -170,9 +174,13 @@ void validaAcerto() {
 void insereArrayUsuario(int valor) {
   for (int i = 0; i <= sizeof(sequenciaJogador); i++) {
     sequenciaJogador[i] = valor;
-    // printf("Jogador: %d \n", sequenciaJogador[i]);
   }
-  validaAcerto();
+}
+
+void avancaJogada(int sequencia) {
+  insereArrayUsuario(0);
+  resetGame();
+  indexLinha = sequencia;
 }
 
 void KeyBoardInteraction(float deltaTime) {
@@ -261,11 +269,11 @@ void KeyBoardInteraction(float deltaTime) {
     LightPowerVerde = 0.0;
   }
 
-  if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) indexLinha = 0; printf("Sequencia %d selecionada\n", indexLinha);
-  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) indexLinha = 1; printf("Sequencia %d selecionada\n", indexLinha);
-  if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) indexLinha = 2; printf("Sequencia %d selecionada\n", indexLinha);
-  if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) indexLinha = 3; printf("Sequencia %d selecionada\n", indexLinha);
-  if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) indexLinha = 4; printf("Sequencia %d selecionada\n", indexLinha);
+  if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) indexLinha = 0;
+  if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) indexLinha = 1;
+  if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) indexLinha = 2;
+  if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) indexLinha = 3;
+  if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) indexLinha = 4;
 
   if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
     if (sequencia[indexLinha][indexColuna] == 2) {
@@ -286,7 +294,23 @@ void KeyBoardInteraction(float deltaTime) {
     }
   }
   if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS) {
+    validaAcerto();
     printf("PONTOS: %d\n", pontuacao);
+    if (pontuacao == 2) {
+      avancaJogada(1);
+    }
+    if (pontuacao == 5) {
+      avancaJogada(2);
+    }
+    if (pontuacao == 9) {
+      avancaJogada(3);
+    }
+    if (pontuacao == 14) {
+      avancaJogada(4);
+    }
+    if (pontuacao == 20) {
+      printf("VOCE ACERTOU TODAS AS SEQUENCIAS \n");
+    }
   }
 }
 
@@ -335,28 +359,26 @@ void ConfigAndRender(GLuint MatrixID, GLuint Texture, GLuint TextureID, GLuint i
 }
 
 void addBuffer(std::vector<glm::vec3> indexed_vertices,std::vector<glm::vec2> indexed_uvs,std::vector<glm::vec3> indexed_normals,std::vector<unsigned short> indices){
+  // Load it into a VBO
+  glGenBuffers(1, &vertexbuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);
 
-    // Load it into a VBO
-    glGenBuffers(1, &vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);
- 
-   
-    glGenBuffers(1, &uvbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size() * sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
- 
-    
-    glGenBuffers(1, &normalbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-    glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
- 
-    // Generate a buffer for the indices as well
-    
-    glGenBuffers(1, &elementbuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
+  
+  glGenBuffers(1, &uvbuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+  glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size() * sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
 
+  
+  glGenBuffers(1, &normalbuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+  glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
+
+  // Generate a buffer for the indices as well
+  
+  glGenBuffers(1, &elementbuffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0] , GL_STATIC_DRAW);
 }
 
 void configAttributes(){
